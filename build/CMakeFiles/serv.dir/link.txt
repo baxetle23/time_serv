@@ -1,0 +1,1 @@
+/usr/bin/cc  -Wall -Werror -Wextra CMakeFiles/serv.dir/timeserv.c.o -o serv 
