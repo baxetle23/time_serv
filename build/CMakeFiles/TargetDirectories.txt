@@ -1,3 +1,0 @@
-/home/aponyatov/Desktop/test_cmake/build/CMakeFiles/rebuild_cache.dir
-/home/aponyatov/Desktop/test_cmake/build/CMakeFiles/edit_cache.dir
-/home/aponyatov/Desktop/test_cmake/build/CMakeFiles/serv.dir
