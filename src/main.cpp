@@ -50,6 +50,7 @@ int main() {
             }
          } else {
             write(childs[0].read_pipe[1], buffer, 10);
+            break;
          }
          usleep(50);
       }
