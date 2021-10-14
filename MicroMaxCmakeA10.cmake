@@ -3,9 +3,9 @@ SET(CMAKE_SYSTEM_NAME      Linux)
 SET(CMAKE_SYSTEM_PROCESSOR arm)
 
 # which compilers to use for C and C++ and ASM-ATT
-SET(CMAKE_C_COMPILER       /home/aponyatov/Desktop/cross/crostool_4_9_1/bin/arm-cortex_a9-linux-gnueabi-gcc )
-SET(CMAKE_CXX_COMPILER     /home/aponyatov/Desktop/cross/crostool_4_9_1/bin/arm-cortex_a9-linux-gnueabi-g++ )
-SET(CMAKE_ASM-ATT_COMPILER /home/aponyatov/Desktop/cross/crostool_4_9_1/bin/arm-cortex_a9-linux-gnueabi-as  )
+SET(CMAKE_C_COMPILER       /home/aponyatov/CrossCompiler/crostool_4_9_1/bin/arm-cortex_a9-linux-gnueabi-gcc )
+SET(CMAKE_CXX_COMPILER     /home/aponyatov/CrossCompiler/crostool_4_9_1/bin/arm-cortex_a9-linux-gnueabi-g++ )
+SET(CMAKE_ASM-ATT_COMPILER /home/aponyatov/CrossCompiler/crostool_4_9_1/bin/arm-cortex_a9-linux-gnueabi-as  )
 
 
 # here is the target environment located

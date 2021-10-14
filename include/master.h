@@ -7,12 +7,11 @@
 #include "shared_memory.h"
 #include "client.h"
 
-// #define Read            0
-// #define Write           1
-// #define ParentRead      read_pipe[0]
-// #define ParentWrite     write_pipe[1]
-// #define ChildRead       write_pipe[0]
-// #define ChildWrite      read_pipe[1]
+union semun {
+    int val;
+    struct semid_ds *buf;
+    ushort *array;
+};
 
 struct fdpipe {
     int read;
@@ -23,6 +22,7 @@ class Master {
 private:
     std::vector<Shared_memory> shared_memory_;
     std::vector<fdpipe> fdpipe_;
+    int semset_id;
     size_t count_;
 
 
@@ -31,7 +31,7 @@ public:
     ~Master();
     //memory
     int InitMemory(size_t size_sigment);
-    void ReadFromSHM();
+    void ReadFromSHM(ChildProc& child);
     void ClearMemory();
     //process
     int InitProcesses(std::vector<ChildProc>& childs);
@@ -39,5 +39,6 @@ public:
     //message to procces
     int WriteToProcess(const char *str, int number_process);
     int ReadFromProcess(int number_process);
-
+    //sem
+    int InitSem(size_t count_sem);
 };

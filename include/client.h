@@ -7,14 +7,15 @@
 class ChildProc {
 public:
     pid_t   pid;
-    /** Pipe for reading for subprocess */
+    // Pipe for reading for subprocess
     int     read_pipe[2];
-    /** Pipe for writing to subprocess */
+    // Pipe for writing to subprocess
     int     write_pipe[2];
-    int     message_flag;
+    // Pointer to shm
     void*   ptr_shm;
-    int     number_proc;
-
+    // Number proc in vector processov
+    int     process_id;
+    // Id semaphora
     int     semset_id;
 
 
