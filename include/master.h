@@ -13,21 +13,16 @@ union semun {
     ushort *array;
 };
 
-struct fdpipe {
-    int read;
-    int write;
-};
-
 class Master {
 private:
     std::vector<Shared_memory> shared_memory_;
-    std::vector<fdpipe> fdpipe_;
+    std::vector<ChildProc>& slaves_;
     int semset_id;
     size_t count_;
 
 
 public:
-    Master(size_t count);
+    Master(size_t count, std::vector<ChildProc>& slaves);
     ~Master();
     //memory
     int InitMemory(size_t size_sigment);
@@ -37,8 +32,8 @@ public:
     int InitProcesses(std::vector<ChildProc>& childs);
     int WaitAllProc() const;
     //message to procces
-    int WriteToProcess(const char *str, int number_process);
-    int ReadFromProcess(int number_process);
+    int WriteToProcess(const char *str, int number_process, size_t size);
+    int ReadFromProcess(int number_process, char *buffer, size_t buffer_size);
     //sem
     int InitSem(size_t count_sem);
 };

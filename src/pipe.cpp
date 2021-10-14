@@ -19,15 +19,16 @@ void ChildReadWritePipeNonblock(ChildProc& process) {
    }
 }
 
+void *TreadWriteReadPipeNonblock(void *arguments) {
+   t_arg *arg;
+   arg = (t_arg *)arguments;
 
-//сделать обертку на системными вызовывами
-void MasterWriteReadPipeNonblock(Master& , std::vector<ChildProc>& childs, int iterator) {
-    for (int i = 0; i < CLIENTS_NUM; ++i) {
-        write(childs[i].write_pipe[1], ("TEST PIPE" + std::to_string(iterator)).data(), SIZE_MESSAGE);
-    }
-    for (int i = 0; i < CLIENTS_NUM; ++i) {
-        char test_pipe[SIZE_MESSAGE];
-        read(childs[i].read_pipe[0], test_pipe, SIZE_MESSAGE);
-        std::cout << "READ FROM PIPE: " << test_pipe << std::endl; 
-    }
+   int j = 0;
+   while (++j < 5) {
+      char test_pipe[SIZE_MESSAGE];
+      arg->master->WriteToProcess(("TEST PIPE" + std::to_string(j)).data(), arg->slave->process_id, SIZE_MESSAGE);
+      arg->master->ReadFromProcess( arg->slave->process_id, test_pipe, SIZE_MESSAGE);
+      std::cout << test_pipe << std::endl;
+   }
+   return NULL;
 }

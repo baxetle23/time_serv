@@ -1,8 +1,9 @@
 #include "../include/master.h"
 #include "../include/shared_memory.h"
 
-Master::Master(size_t count) : 
+Master::Master(size_t count, std::vector<ChildProc>& slaves) : 
     shared_memory_(count),
+    slaves_(slaves),
     count_(count) {
 }
 Master::~Master() {}
@@ -79,13 +80,13 @@ int Master::WaitAllProc() const {
     return 0;
 }
 
-// int Master::WriteToProcess(const char *str, int number_process) {
-    
-// }
+int Master::WriteToProcess(const char *str, int number_process, size_t size_) {
+    return write(slaves_[number_process].write_pipe[1], str, size_);
+}
 
-// int Master::ReadFromProcess(int number_proc) {
-
-// }
+int Master::ReadFromProcess(int number_process, char *buffer, size_t buffer_size) {
+    return read(slaves_[number_process].read_pipe[0], buffer, buffer_size);
+}
 
 void Master::ReadFromSHM(ChildProc& process) {
     //уменьшить значение на единцу 

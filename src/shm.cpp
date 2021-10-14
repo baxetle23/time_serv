@@ -24,3 +24,10 @@ void ChildWriteSHM(ChildProc& process) {
     }
 }
 
+void *TreadReadFromSHM(void *arguments) {
+   t_arg *arg;
+   arg = (t_arg *)arguments;
+   arg->master->ReadFromSHM(*(arg->slave));
+   return NULL;
+}
+

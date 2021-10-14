@@ -22,12 +22,16 @@
 #define CLIENTS_NUM 10
 #define SIZE_MESSAGE 100
 
+typedef struct s_arg {
+   Master    *master;
+   ChildProc *slave;
+   pthread_t *tread;
+}  t_arg;
 
 //pipe
 void ChildReadWritePipeNonblock(ChildProc& process);
-void MasterWriteReadPipeNonblock(Master& master, std::vector<ChildProc>& childs, int iterator);
-
-//sem
+void *TreadWriteReadPipeNonblock(void *arguments);
 
 //shm
 void ChildWriteSHM(ChildProc& process);
+void *TreadReadFromSHM(void *arguments);
