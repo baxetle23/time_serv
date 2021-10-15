@@ -1,6 +1,5 @@
 #include <../include/header.h>
 
-
 void SlaveProcess(std::vector<ChildProc>& childs) {
    std::cout << "I am child witd id " << childs[0].process_id
                 << " Pid " << getpid()
@@ -8,10 +7,11 @@ void SlaveProcess(std::vector<ChildProc>& childs) {
                 << " has fd " <<  childs[0].read_pipe[1] << ' ' <<  childs[0].write_pipe[0] << std::endl;
 
    #ifdef FORK_PIPE
-      int j = 0;
-      while (++j < 5) {
-         ChildReadWritePipeNonblock(childs[0]);
-      }
+      pthread_t process_thread_PIPE;
+      t_arg process_arguments_PIPE;
+      process_arguments_PIPE.slave = &childs[0];
+      process_arguments_PIPE.tread = &process_thread_PIPE;
+      pthread_create(&process_thread_PIPE, NULL, ChildReadWritePipeNonblock, &process_arguments_PIPE);
    #endif
 
    #ifdef FORK_SHM_SEMAPHORE
@@ -20,6 +20,9 @@ void SlaveProcess(std::vector<ChildProc>& childs) {
          ChildWriteSHM(childs[0]);
       }
    #endif
+   int test;
+   std::cout << "process wait\n";
+   std::cin >> test;
 }
 
 int main() {
@@ -68,6 +71,7 @@ int main() {
 
 
    int test;
+   std::cout << "master wait\n";
    std::cin >> test;
    master.WaitAllProc();
    master.ClearMemory();

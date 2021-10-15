@@ -29,7 +29,7 @@ typedef struct s_arg {
 }  t_arg;
 
 //pipe
-void ChildReadWritePipeNonblock(ChildProc& process);
+void *ChildReadWritePipeNonblock(void* arguments);
 void *TreadWriteReadPipeNonblock(void *arguments);
 
 //shm

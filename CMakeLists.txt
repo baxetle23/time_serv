@@ -18,8 +18,8 @@
 #     ${CMAKE_CURRENT_SOURCE_DIR}/src/pipe.cpp
 #     ${CMAKE_CURRENT_SOURCE_DIR}/src/client.cpp)
 
-# option(FORK_PIPE "Build programm only module FORK and PIPE" ON)
-# option(FORK_SHM_SEMAPHORE "Build programm only module FORK, SHM, SEMAPHORE" OFF)
+# option(FORK_PIPE "Build programm only module FORK and PIPE" OFF)
+# option(FORK_SHM_SEMAPHORE "Build programm only module FORK, SHM, SEMAPHORE" ON)
 
 # if(FORK_PIPE)
 #     add_compile_definitions(FORK_PIPE)

@@ -20,7 +20,7 @@ void ChildWriteSHM(ChildProc& process) {
         fprintf(stdout, "SRM IS READY TO Write\n");
         process.WriteToSHM(str.data() , SIZE_MEMORY); 
         semop(process.semset_id, &plus, 1);
-        sleep(3);
+        sleep(1);
     }
 }
 

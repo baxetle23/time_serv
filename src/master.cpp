@@ -21,11 +21,12 @@ int Master::InitMemory(size_t size_sigment) {
     return 0;
 }
 
-void Master::ClearMemory() {
+int Master::ClearMemory() {
     for(Shared_memory& shm : shared_memory_) {
         shm.freeShm();
     }
     semctl(semset_id, 0, IPC_RMID, NULL); // delete array sem
+    return 0;
 }
 
 int Master::InitProcesses(std::vector<ChildProc>& childs_) {
@@ -88,10 +89,7 @@ int Master::ReadFromProcess(int number_process, char *buffer, size_t buffer_size
     return read(slaves_[number_process].read_pipe[0], buffer, buffer_size);
 }
 
-void Master::ReadFromSHM(ChildProc& process) {
-    //уменьшить значение на единцу 
-    //считать информацию
-    //уменьшить значение на единцу получим 0  
+void Master::ReadFromSHM(ChildProc& process) { 
     while(1) {
         struct sembuf minus = {(ushort)process.process_id,-1,0};
         if (semop(process.semset_id, &minus, 1) == -1) {

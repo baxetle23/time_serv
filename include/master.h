@@ -26,8 +26,8 @@ public:
     ~Master();
     //memory
     int InitMemory(size_t size_sigment);
+    int ClearMemory();
     void ReadFromSHM(ChildProc& child);
-    void ClearMemory();
     //process
     int InitProcesses(std::vector<ChildProc>& childs);
     int WaitAllProc() const;
