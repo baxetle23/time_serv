@@ -19,7 +19,7 @@ public:
     int     semset_id;
 
 
-    void WriteToSHM(const char *string, size_t size);
+    int WriteToSHM(const char *string, size_t size);
     int WriteToMaster(const char *string, size_t size);
     int ReadFromMaster(char *buffer, size_t size);  
 };

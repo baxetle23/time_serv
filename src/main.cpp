@@ -7,7 +7,7 @@ void SlaveProcess(std::vector<Slave>& childs) {
                 << " has fd " <<  childs[0].read_pipe[1] << ' ' <<  childs[0].write_pipe[0] << std::endl;
 
    #ifdef FORK_PIPE
-      std::thread thread_pipe_read(ChildReadWritePipeNonblock, childs[0]);
+      std::thread thread_pipe_read(ChildReadWritePipeNonblock, &childs[0]);
    #endif
 
    #ifdef FORK_SHM_SEMAPHORE
@@ -16,25 +16,25 @@ void SlaveProcess(std::vector<Slave>& childs) {
          ChildWriteSHM(childs[0]);
       }
    #endif
-   int test;
+
    std::cout << "process wait\n";
+   int test;
    std::cin >> test;
 }
 
 int main() {
    std::vector<Slave> childs(CLIENTS_NUM);
+   Semaphore semaphores(CLIENTS_NUM, 0600 | IPC_CREAT | IPC_EXCL, 0);
    Master master(CLIENTS_NUM, childs); 
 
 
    #ifdef FORK_SHM_SEMAPHORE
-      if (master.InitMemory(SIZE_MEMORY)) {
+      if (master.InitMemory(SIZE_SHARED_MEMORY)) {
          fprintf(stdout, "%s", strerror(errno));
          exit(EXIT_FAILURE);
       }
-      if (master.InitSem(SIZE_MEMORY)) {
-         fprintf(stdout, "%s", strerror(errno));
-         exit(EXIT_FAILURE);
-      }
+      master.SetSemId(semaphores.GetId());
+
    #endif
 
    if (master.InitProcesses(childs)) {

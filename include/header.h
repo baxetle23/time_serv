@@ -18,19 +18,20 @@
 #include "../include/shared_memory.h"
 #include "../include/master.h"
 #include "../include/client.h"
+#include "../include/semaphore.h"
 
-#define SIZE_MEMORY 100
+#define SIZE_SHARED_MEMORY 100
 #define CLIENTS_NUM 10
 #define SIZE_MESSAGE 100
 
 typedef struct s_arg {
-   Master    *master;
-   Slave *slave;
-   pthread_t *tread;
+   Master      *master;
+   Slave       *slave;
+   
 }  t_arg;
 
 //pipe
-void *ChildReadWritePipeNonblock(Slave slave);
+void *ChildReadWritePipeNonblock(Slave *slave);
 void *TreadWriteReadPipeNonblock(void *arguments);
 
 //shm

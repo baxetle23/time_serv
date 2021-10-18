@@ -5,23 +5,14 @@ void ChildWriteSHM(Slave& process) {
     // записать информацию
     // установить семафор в 2
 
-    (void)process;
     std::mt19937 gen; 
     gen.seed(time(0) + getpid()); // try to comment this string 
     std::string str = "write to shared memory " + std::to_string(getpid()) + std::string("  ") + std::to_string(gen() % 100);
-
-    struct sembuf plus = {(ushort)process.process_id,2,0};
-    struct sembuf zero = {(ushort)process.process_id,0,0};
-    
-    if (semop(process.semset_id, &zero, 1) == -1) {
-        fprintf(stdout, "PROCESS SEM FAILED\n");
-        exit (EXIT_FAILURE);
-    } else {
-        fprintf(stdout, "SRM IS READY TO Write\n");
-        process.WriteToSHM(str.data() , SIZE_MEMORY); 
-        semop(process.semset_id, &plus, 1);
-        sleep(1);
-    }
+    std::cout << "shm.cpp ChildWriteSHM (wait semaphore zero - procces -" << process.process_id << std::endl;
+    Semaphore::CheckZero(process.semset_id, process.process_id);
+    process.WriteToSHM(str.data() , SIZE_SHARED_MEMORY); 
+    Semaphore::ReturnValue(process.semset_id, process.process_id, 2);
+    sleep(1);
 }
 
 void *TreadReadFromSHM(void *arguments) {

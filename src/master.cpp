@@ -1,5 +1,6 @@
 #include "../include/master.h"
 #include "../include/shared_memory.h"
+#include "../include/semaphore.h"
 
 Master::Master(size_t count, std::vector<Slave>& slaves) : 
     shared_memory_(count),
@@ -25,13 +26,15 @@ int Master::ClearMemory() {
     for(Shared_memory& shm : shared_memory_) {
         shm.freeShm();
     }
-    semctl(semset_id, 0, IPC_RMID, NULL); // delete array sem
     return 0;
+}
+
+void Master::SetSemId(size_t semid) {
+    semset_id = semid;
 }
 
 int Master::InitProcesses(std::vector<Slave>& childs_) {
     for(size_t i = 0; i < count_; ++i) {
-
         //open pipe
         if (pipe(childs_[i].read_pipe) < 0 || pipe(childs_[i].write_pipe) < 0) {
             perror("pipe");
@@ -91,25 +94,9 @@ int Master::ReadFromProcess(int number_process, char *buffer, size_t buffer_size
 
 void Master::ReadFromSHM(Slave& process) { 
     while(1) {
-        struct sembuf minus = {(ushort)process.process_id,-1,0};
-        if (semop(process.semset_id, &minus, 1) == -1) {
-            fprintf(stdout, "FREE FAILED\n");
-            exit (EXIT_FAILURE);
-        } else {
-            std::cout << static_cast<char *>(process.ptr_shm) << std::endl;
-            semop(process.semset_id, &minus, 1);
-        }
+        Semaphore::TakeValue(process.semset_id, process.process_id, 1);
+        std::cout << static_cast<char *>(process.ptr_shm) << std::endl;
+        Semaphore::TakeValue(process.semset_id, process.process_id, 1);
     }
 }
 
-int Master::InitSem(size_t count) {
-    semset_id = semget(IPC_PRIVATE, count, 0600 | IPC_CREAT | IPC_EXCL);
-    for (size_t i = 0; i < count; ++i) {
-        union semun initval;
-        initval.val = 0; // счетчик в 0
-        if (semctl(semset_id, i, SETVAL, initval) == -1) {
-            return 1;
-        }
-    }
-    return 0;
-}
