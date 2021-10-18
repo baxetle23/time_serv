@@ -4,7 +4,7 @@
 #include <sys/types.h>
 #include <string.h>
 
-class ChildProc {
+class Slave {
 public:
     pid_t   pid;
     // Pipe for reading for subprocess

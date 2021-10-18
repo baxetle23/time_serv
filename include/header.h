@@ -6,6 +6,7 @@
 #include <sys/sem.h>
 #include <fcntl.h>
 #include <pthread.h>
+#include <thread>
 #include <iostream>
 #include <cstdio>
 #include <cstring>
@@ -24,14 +25,14 @@
 
 typedef struct s_arg {
    Master    *master;
-   ChildProc *slave;
+   Slave *slave;
    pthread_t *tread;
 }  t_arg;
 
 //pipe
-void *ChildReadWritePipeNonblock(void* arguments);
+void *ChildReadWritePipeNonblock(Slave slave);
 void *TreadWriteReadPipeNonblock(void *arguments);
 
 //shm
-void ChildWriteSHM(ChildProc& process);
+void ChildWriteSHM(Slave& process);
 void *TreadReadFromSHM(void *arguments);

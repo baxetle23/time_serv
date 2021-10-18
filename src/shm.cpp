@@ -1,6 +1,6 @@
 #include <../include/header.h>
 
-void ChildWriteSHM(ChildProc& process) {
+void ChildWriteSHM(Slave& process) {
     // проверить значение семафора на ноль
     // записать информацию
     // установить семафор в 2

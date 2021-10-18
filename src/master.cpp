@@ -1,7 +1,7 @@
 #include "../include/master.h"
 #include "../include/shared_memory.h"
 
-Master::Master(size_t count, std::vector<ChildProc>& slaves) : 
+Master::Master(size_t count, std::vector<Slave>& slaves) : 
     shared_memory_(count),
     slaves_(slaves),
     count_(count) {
@@ -29,7 +29,7 @@ int Master::ClearMemory() {
     return 0;
 }
 
-int Master::InitProcesses(std::vector<ChildProc>& childs_) {
+int Master::InitProcesses(std::vector<Slave>& childs_) {
     for(size_t i = 0; i < count_; ++i) {
 
         //open pipe
@@ -89,7 +89,7 @@ int Master::ReadFromProcess(int number_process, char *buffer, size_t buffer_size
     return read(slaves_[number_process].read_pipe[0], buffer, buffer_size);
 }
 
-void Master::ReadFromSHM(ChildProc& process) { 
+void Master::ReadFromSHM(Slave& process) { 
     while(1) {
         struct sembuf minus = {(ushort)process.process_id,-1,0};
         if (semop(process.semset_id, &minus, 1) == -1) {

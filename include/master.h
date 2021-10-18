@@ -16,20 +16,20 @@ union semun {
 class Master {
 private:
     std::vector<Shared_memory> shared_memory_;
-    std::vector<ChildProc>& slaves_;
+    std::vector<Slave>& slaves_;
     int semset_id;
     size_t count_;
 
 
 public:
-    Master(size_t count, std::vector<ChildProc>& slaves);
+    Master(size_t count, std::vector<Slave>& slaves);
     ~Master();
     //memory
     int InitMemory(size_t size_sigment);
     int ClearMemory();
-    void ReadFromSHM(ChildProc& child);
+    void ReadFromSHM(Slave& child);
     //process
-    int InitProcesses(std::vector<ChildProc>& childs);
+    int InitProcesses(std::vector<Slave>& childs);
     int WaitAllProc() const;
     //message to procces
     int WriteToProcess(const char *str, int number_process, size_t size);
