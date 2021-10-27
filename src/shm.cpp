@@ -1,4 +1,4 @@
-#include <../include/header.h>
+#include "../include/header.h"
 
 void ChildWriteSHM(Slave& process) {
     // проверить значение семафора на ноль

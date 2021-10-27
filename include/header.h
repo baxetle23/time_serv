@@ -5,7 +5,6 @@
 #include <sys/wait.h>
 #include <sys/sem.h>
 #include <fcntl.h>
-#include <pthread.h>
 #include <thread>
 #include <iostream>
 #include <cstdio>
@@ -15,24 +14,26 @@
 #include <unistd.h>
 #include <random>
 #include <ctime>
+#include <time.h>
 #include "../include/shared_memory.h"
 #include "../include/master.h"
 #include "../include/client.h"
 #include "../include/semaphore.h"
+#include "../include/request_handler.h"
+#include "../include/log_duration.h"
 
+#define CLIENTS_NUM 1
 #define SIZE_SHARED_MEMORY 100
-#define CLIENTS_NUM 10
 #define SIZE_MESSAGE 100
 
 typedef struct s_arg {
    Master      *master;
    Slave       *slave;
-   
 }  t_arg;
 
 //pipe
-void *ChildReadWritePipeNonblock(Slave *slave);
-void *TreadWriteReadPipeNonblock(void *arguments);
+void *SlaveExecuteRequest(Slave *slave);
+void *Requests(void *arguments);
 
 //shm
 void ChildWriteSHM(Slave& process);

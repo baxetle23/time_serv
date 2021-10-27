@@ -1,4 +1,4 @@
-#include "client.h"
+#include "../include/client.h"
 
 int Slave::WriteToSHM(const char *string, size_t size) {
     strncpy((char *)ptr_shm, string, size);

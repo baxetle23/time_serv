@@ -1,50 +1,53 @@
-#include <../include/header.h>
+#include "../include/header.h"
 
-//класс обработчик событий 
-//класс отправки сообщений
-void ReadPipeFromMaster(Slave *slave, char *buffer, size_t buffer_size, int *count) {
-   while (1) {
-      slave->ReadFromMaster(buffer, buffer_size);
-      *count = 1;
-   }
+void WaitRequest(void *request_handler_slave) {
+   RequestHandlerSlave * rh = static_cast<RequestHandlerSlave *>(request_handler_slave);
+   rh->WaitRequest();
 }
 
-//проверка Read Write - спрятать в класс 
-void *ChildReadWritePipeNonblock(Slave *slave) {
-   char buffer[SIZE_MESSAGE];
-   int count = 0;
-   std::thread Read_pipe(ReadPipeFromMaster, slave, buffer, SIZE_MESSAGE, &count);
-   while(1) {
-      if (count == 1) {
-         slave->WriteToMaster(buffer, SIZE_MESSAGE);
-         count = 0;
-      } else {
+void *SlaveExecuteRequest(Slave *slave) {
+  RequestHandlerSlave request_handler_slave_(slave->read_pipe[1], slave->write_pipe[0]);
+  std::thread Read_pipe(WaitRequest, (void *)(&request_handler_slave_));
+  while(1) {
+      request_handler_slave_.ExecuteRequest();
+      usleep(100);
+  }
+  return NULL;
+}
+
+//Slave
+//-----------------------------------------------------------------------
+//MASTER
+
+void WaitResponces(void *request_handler) {
+   RequestHandlerMaster* rh = static_cast<RequestHandlerMaster *>(request_handler);
+   rh->WaitResponces();
+}
+
+void *Requests(void *arguments) {
+   t_arg *arg;
+   arg = (t_arg *)arguments;
+   RequestHandlerMaster request_handler(arg->master->GetFdWrite(arg->slave->process_id),
+                                 arg->master->GetFdRead(arg->slave->process_id));
+   std::thread Read_pipe(WaitResponces, static_cast<void *>(&request_handler));
+   std::vector<uint8_t> data {1};
+   while (1)
+   {  
+      sleep(1);
+      #ifdef TIME
+         LOG_DURATION("send->responce id=" + std::to_string(arg->slave->process_id));
+      #endif 
+      uint8_t id;
+      modbus_rtu_t responce;
+      if (request_handler.SendRequest(MODBUS_FUNC_WRITE,64,data.size(),data, id)) {
+         perror("pipe.cpp SendRequest");
+      }
+      if (request_handler.SendRequest(MODBUS_FUNC_READ,64,1,id)) {
+         perror("pipe.cpp SendRequest");
+      } 
+      while (!responce.id) {
          usleep(100);
+         request_handler.ResponceRequest(id, responce);
       }
    }
-   return NULL;
-}
-
-void ReadPipeFromSlave(void *arguments) {
-   t_arg *arg;
-   arg = (t_arg *)arguments;
-   while (1) {
-      char test_pipe[SIZE_MESSAGE];
-      arg->master->ReadFromProcess(arg->slave->process_id, test_pipe, SIZE_MESSAGE);
-      std::cout << "принял " << test_pipe;
-   }
-}
-
-void *TreadWriteReadPipeNonblock(void *arguments) {
-   t_arg *arg;
-   arg = (t_arg *)arguments;
-   std::thread Read_pipe(ReadPipeFromSlave, arguments);
-   int j = 0;
-   while (1) {
-      j++;
-      arg->master->WriteToProcess(("pipe.cpp TreadWriteReadPipeNonblock (pid slave = " + std::to_string(arg->slave->pid) + " iterator = " + std::to_string(j) + ")\n").data(), arg->slave->process_id, SIZE_MESSAGE);
-      std::cout << ("отправил pipe.cpp TreadWriteReadPipeNonblock (pid slave = " + std::to_string(arg->slave->pid) + " iterator = " + std::to_string(j) + ")\n").data();
-      sleep(1);
-   }
-   return NULL;
 }

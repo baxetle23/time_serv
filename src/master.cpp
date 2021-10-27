@@ -84,6 +84,13 @@ int Master::WaitAllProc() const {
     return 0;
 }
 
+int  Master::GetFdWrite(int number_process) {
+    return slaves_[number_process].write_pipe[1];
+}
+int Master::GetFdRead(int number_process) {
+    return slaves_[number_process].read_pipe[0];
+}
+
 int Master::WriteToProcess(const char *str, int number_process, size_t size_) {
     return write(slaves_[number_process].write_pipe[1], str, size_);
 }

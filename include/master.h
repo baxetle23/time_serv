@@ -30,4 +30,7 @@ public:
     int ReadFromProcess(int number_process, char *buffer, size_t buffer_size);
     //sem
     void SetSemId(size_t semid);
+
+    int  GetFdWrite(int number_process);
+    int  GetFdRead(int number_process);
 };

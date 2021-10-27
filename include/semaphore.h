@@ -1,5 +1,7 @@
 #pragma once
 #include <unistd.h>
+#include <cstdio>
+#include <cstdlib>
 #include <sys/sem.h>
 
 union semun {
@@ -18,7 +20,7 @@ public:
         initval.val = value;
         for (int i = 0; i < count_sem; ++i) {
             if (semctl(sem_id_, i, SETVAL, initval) == - 1) {
-                fprintf(stderr, "PROCESS SEM FAILED\n");
+                perror("PROCESS SEM FAILED\n");
                 exit (EXIT_FAILURE);
             }
         }
@@ -29,7 +31,7 @@ public:
     static int ReturnValue(size_t semset_id, size_t id_sem, short int value) {
         struct sembuf plus = {(ushort)id_sem,value, 0};
         if (semop(semset_id, &plus, 1) == -1) {
-            fprintf(stderr, "PROCESS SEM FAILED\n");
+            perror("PROCESS SEM FAILED\n");
             return 1;
         } else {
             return 0;
@@ -39,7 +41,7 @@ public:
         short int minus_value = value * (-1);
         struct sembuf minus = {(ushort)id_sem, minus_value, 0};
         if (semop( semset_id, &minus, 1) == -1) {
-            fprintf(stderr, "PROCESS SEM FAILED\n");
+            perror("PROCESS SEM FAILED\n");
             return 1;
         } else {
             return 0;
@@ -48,7 +50,7 @@ public:
     static int CheckZero(size_t semset_id, size_t id_sem) {
         struct sembuf zero = {(ushort)id_sem,0,0};
         if (semop(semset_id, &zero, 1) == -1) {
-            fprintf(stderr, "PROCESS SEM FAILED\n");
+            perror("PROCESS SEM FAILED\n");
             return 1;
         } else {
             return 0;
